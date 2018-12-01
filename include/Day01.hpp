@@ -17,8 +17,8 @@ Day<1>::solve(std::istream &is, std::ostream &os) {
   int sum{0};
   std::unordered_set<int> uniq;
   while (true) {
-    for (auto v : data) {
-      if (!uniq.insert(sum += v).second) {
+    for (int const v : data) {
+      if (auto [_, u] = uniq.insert(sum += v); !u) {
         os << sum << '\n';
         return;
       }
