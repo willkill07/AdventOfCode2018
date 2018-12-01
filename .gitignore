@@ -1,0 +1,8 @@
+Advent
+DownloadDay.py
+build/
+compile.sh
+compile_commands.json
+*~
+**/*~
+**/*.o
