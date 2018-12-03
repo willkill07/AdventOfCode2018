@@ -3,5 +3,3 @@ add_executable(Advent
 
 target_compile_options(Advent PUBLIC ${CXX_TARGET_FLAGS})
 target_link_libraries(Advent Threads::Threads range-v3)
-
-install(TARGETS Advent RUNTIME DESTINATION ${PROJECT_SOURCE_DIR})
