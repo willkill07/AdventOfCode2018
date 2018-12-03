@@ -6,7 +6,7 @@ All implementations are written in C++, mostly adhering to C++17/C++20 guideline
 
 * clang (>= 5.0)
 * libc++ (>= 5.0)
-* CMake (>= 3.8)
+* CMake (>= 3.11)
 * macOS or Linux (only two systems I've tested on)
 
 ## Compiling
