@@ -2,67 +2,56 @@
 
 #include <algorithm>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <range/v3/all.hpp>
+namespace view = ranges::view;
 
 struct box {
   int id, x, y, w, h;
-
-  static int
-  index(std::tuple<int, int> const t) {
-    auto [x, y] = t;
-    return x << 16 | y;
+  box(std::string const& s) {
+    sscanf(s.c_str(), "#%d @ %d,%d: %dx%d", &id, &x, &y, &w, &h);
   }
-
   auto
-  cells () const {
-    using namespace ranges::view;
-    return cartesian_product(iota(x) | take_exactly(w), iota(y) | take_exactly(h));
-  }
-
-  void
-  mark(std::unordered_map<int, int>& g) const {
-    for (auto i : cells() | ranges::view::transform(box::index)) {
-      ++g[i];
-    }
-  }
-
-  bool
-  clean(std::unordered_map<int, int> const& g) const {
-    using namespace ranges::view;
-    int s {ranges::accumulate (
-             cells()
-             | take_while([&](auto i) { return g.at(box::index(i)) == 1; })
-             | transform([] (auto) { return 1; })
-             , 0)};
-    return s == (w * h);
+  space() const {
+    return view::cartesian_product(view::iota(x, x + w), view::iota(y, y + h));
   }
 };
+
+box
+make_box(std::string const& s) {
+  return {s};
+}
+
+template <typename Mat>
+auto
+clean(Mat& grid) {
+  return [&](auto const& box) {
+    auto equals_one = [&](auto const& point) { return grid(point) == 1; };
+    auto one = [](auto const&) { return 1; };
+    int ones = ranges::accumulate(box.space() | view::take_while(equals_one) | view::transform(one), 0);
+    return ones == (box.w * box.h);
+  };
+}
 
 template <>
 template <bool part2>
 void
 Day<3>::solve(std::istream& is, std::ostream& os) {
-  std::unordered_map<int, int> grid;
-  std::vector<box> boxes;
-  for (std::string line; std::getline(is, line);) {
-    box b;
-    sscanf(line.c_str(), "#%d @ %d,%d: %dx%d", &b.id, &b.x, &b.y, &b.w, &b.h);
-    boxes.push_back(b);
-  }
-  for (auto const& b : boxes) {
-    b.mark(grid);
+  auto grid = [v = std::vector<int>(1'000'000)](auto const& p) mutable -> int& {
+    auto [x, y] = p;
+    return v[y * 1000 + x];
+  };
+  std::vector<box> boxes(ranges::getlines(is) | view::transform(make_box));
+  for (auto const& point : view::join(boxes | view::transform(&box::space))) {
+    ++grid(point);
   }
   if constexpr (part2) {
-    for (auto const& b : boxes) {
-      if (b.clean(grid)) {
-        os << b.id << '\n';
-        return;
-      }
-    }
+    auto b = boxes | view::filter(clean(grid));
+    os << ranges::begin(b)->id << '\n';
   } else {
-    os << ranges::count_if(grid, [](auto const& c) { return c.second > 1; }) << '\n';
+    auto all_cells = view::cartesian_product(view::iota(0, 1'000), view::iota(0, 1'000));
+    auto greater_than_one = [&](auto const& p) { return grid(p) > 1; };
+    os << ranges::count_if(all_cells, greater_than_one) << '\n';
   }
 }
