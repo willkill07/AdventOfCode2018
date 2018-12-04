@@ -1,10 +1,20 @@
-#include "Solution.hpp"
-
 #include <algorithm>
 #include <string>
 #include <vector>
 
-#include <range/v3/all.hpp>
+#include <range/v3/algorithm.hpp>
+#include <range/v3/getlines.hpp>
+#include <range/v3/numeric.hpp>
+
+#include <range/v3/view/cartesian_product.hpp>
+#include <range/v3/view/filter.hpp>
+#include <range/v3/view/iota.hpp>
+#include <range/v3/view/join.hpp>
+#include <range/v3/view/take_while.hpp>
+#include <range/v3/view/view.hpp>
+
+#include "Solution.hpp"
+
 namespace view = ranges::view;
 
 struct box {
@@ -55,3 +65,7 @@ Day<3>::solve(std::istream& is, std::ostream& os) {
     os << ranges::count_if(all_cells, greater_than_one) << '\n';
   }
 }
+
+template struct Day<3>;
+template void Day<3>::solve<true>(std::istream&, std::ostream&);
+template void Day<3>::solve<false>(std::istream&, std::ostream&);

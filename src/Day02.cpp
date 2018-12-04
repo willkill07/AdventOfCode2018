@@ -1,12 +1,12 @@
-#include "Solution.hpp"
-#include "util.hpp"
-
 #include <algorithm>
 #include <array>
 #include <iterator>
 #include <numeric>
 #include <unordered_map>
 #include <vector>
+
+#include "Solution.hpp"
+#include "util.hpp"
 
 auto &
 count(std::string const &s) {
@@ -56,3 +56,7 @@ Day<2>::solve(std::istream &is, std::ostream &os) {
     os << (twos * threes) << '\n';
   }
 }
+
+template struct Day<2>;
+template void Day<2>::solve<true>(std::istream&, std::ostream&);
+template void Day<2>::solve<false>(std::istream&, std::ostream&);
