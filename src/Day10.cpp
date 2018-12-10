@@ -48,15 +48,9 @@ struct particle {
 struct box {
   using lim = std::numeric_limits<long long>;
   point min {lim::max(), lim::max()} , max {lim::min(), lim::min()};
-  long long width() const {
-    return std::abs(max.x - min.x + 1);
-  }
-  long long height() const {
-    return std::abs(max.y - min.y + 1);
-  }
-  long long area() const {
-    return width() * height();
-  }
+  long long width() const { return std::abs(max.x - min.x + 1); }
+  long long height() const { return std::abs(max.y - min.y + 1); }
+  long long area() const { return width() * height(); }
   static box update(box const& b, point const& p) {
     auto [x, y] = p;
     box n;
@@ -85,26 +79,19 @@ Day<10>::solve(std::istream& is, std::ostream& os) {
     tMax = std::max({tMax, x, y});
     particles.push_back(p);
   }
-
-  using namespace ranges::view;
-
-  auto area = [](auto const& a) { return std::get<1>(a).area(); };
-  auto findMinTime = [&](auto t) {
-    return std::pair(t, ranges::accumulate(particles | transform(particle::eval(t)), box {}, &box::update));
-  };
-
-  auto [minTime, rect] = ranges::min(closed_iota(tMin, tMax) | transform(findMinTime), std::less<>{}, area);
+  // normally would search between tMin and tMax but average worked?
+  int const minTime = (tMin + tMax) / 2;
   if constexpr (part2) {
     os << minTime << '\n';
     return;
   }
-
+  auto const eval = particle::eval(minTime);
+  using namespace ranges::view;
+  box const rect =  ranges::accumulate(particles | transform(eval), box {}, &box::update);
   std::vector<int> grid(rect.area(), 0);
-  auto eval = particle::eval(minTime);
   for (auto const & p : particles) {
     grid[rect.index(eval(p))] = 1;
   }
-
   std::vector<long long> chars ((rect.width() + 2) / 8);
   for (auto&& [y, row] : zip(indices, grid | chunk(rect.width()))) {
     for (auto && [i, cells] : zip(indices, row | chunk(8))) {
