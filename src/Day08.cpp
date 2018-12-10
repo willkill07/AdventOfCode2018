@@ -1,7 +1,13 @@
 #include "Solution.hpp"
 
-#include <range/v3/all.hpp>
+#include <iterator>
 #include <vector>
+
+#include <range/v3/numeric.hpp>
+#include <range/v3/view/transform.hpp>
+#include <range/v3/view/filter.hpp>
+
+namespace view = ranges::view;
 
 struct node {
   std::vector<unsigned long long> meta;
@@ -21,7 +27,7 @@ node read(std::istream_iterator<int>& i) {
 }
 
 int total(const node& node) {
-  return ranges::accumulate(node.children | ranges::view::transform(total), 0) + ranges::accumulate(node.meta, 0);
+  return ranges::accumulate(node.children | view::transform(total), 0) + ranges::accumulate(node.meta, 0);
 }
 
 int value(const node& node) {
@@ -29,8 +35,8 @@ int value(const node& node) {
     return total(node);
   }
   return ranges::accumulate(node.meta
-                            | ranges::view::filter([&](size_t d) { return d > 0 && d <= node.children.size(); })
-                            | ranges::view::transform([&](size_t d) { return value(node.children[d - 1]); }),
+                            | view::filter([&](size_t d) { return d > 0 && d <= node.children.size(); })
+                            | view::transform([&](size_t d) { return value(node.children[d - 1]); }),
                             0);
 }
 

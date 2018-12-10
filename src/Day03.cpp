@@ -24,7 +24,7 @@ struct box {
   }
   auto
   space() const {
-    return view::cartesian_product(view::iota(x, x + w), view::iota(y, y + h));
+    return view::cartesian_product(view::closed_iota(x, x + w), view::closed_iota(y, y + h));
   }
 };
 
