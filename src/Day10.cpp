@@ -14,8 +14,6 @@
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
 
-#include <iomanip>
-
 std::unordered_map<long long, char> OCR = {
   {0b111110'100001'100001'100001'111110'100001'100001'100001'100001'111110, 'B'},
   {0b011110'100001'100000'100000'100000'100000'100000'100000'100001'011110, 'C'},
@@ -59,7 +57,6 @@ struct box {
     n.max = {std::max(b.max.x, x), std::max(b.max.y, y)};
     return n;
   }
-
   unsigned index(point const& p) const {
     auto [x, y] = p;
     return (x - min.x) + (y - min.y) * width();
@@ -101,7 +98,7 @@ Day<10>::solve(std::istream& is, std::ostream& os) {
     grid[rect.index(eval(p))] = 1;
   }
 
-  std::array<long long, 8> chars = { 0 };
+  std::vector<long long> chars ((rect.width() + 2) / 8);
   for (auto&& [y, row] : zip(indices, grid | chunk(rect.width()))) {
     for (auto && [i, cells] : zip(indices, row | chunk(8))) {
       for (auto && [x, c] : zip(indices, cells) | take(6)) {
